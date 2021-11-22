@@ -1,10 +1,12 @@
 # Populating JavaScript Set performance comparison
 
-Model Name:	MacBook Pro
-Model Identifier:	MacBookPro18,4
-Chip:	Apple M1 Max
-Total Number of Cores:	10 (8 performance and 2 efficiency)
-Memory:	32 GB
+key | value
+-|-
+Model Name | MacBook Pro
+Model Identifier | MacBookPro18,4
+Chip | Apple M1 Max
+Total Number of Cores | 10 (8 performance and 2 efficiency)
+Memory | 32 GB
 
 name | duration | normal
 -|-|-
