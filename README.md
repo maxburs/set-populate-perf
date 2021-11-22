@@ -11,7 +11,16 @@ deno | 1.16.2
 
 name | duration | normal
 -|-|-
-map | 3940 | 1.1400462962962963
-generator | 6640 | 1.9212962962962963
-Set#add | 3456 | 1
-iterator | 4218 | 1.2204861111111112
+browser | name | duration | normal
+webkit | map | 4214.700000017881 | 1.162162907413227
+webkit | generator | 7012.4000000059605 | 1.9336017206246858
+webkit | Set#add | 3626.5999999940395 | 1
+webkit | iterator | 4563.199999988079 | 1.2582584238668668
+firefox | map | 4215 | 1.1595917356812147
+firefox | generator | 7028 | 1.9334782249982387
+firefox | Set#add | 3634.899999976158 | 1
+firefox | iterator | 4566.4000000059605 | 1.2562656469327662
+chromium | map | 4213.5 | 1.159083406693942
+chromium | generator | 7028.9000000059605 | 1.9335662412051635
+chromium | Set#add | 3635.199999988079 | 1
+chromium | iterator | 4567 | 1.2563270246520073
