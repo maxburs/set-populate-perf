@@ -109,7 +109,7 @@ async function main() {
   console.log({ TIMES, COUNT });
   fs.writeFileSync(FILE, "browser, name, duration, normal\n");
 
-  for (const browserType of [chromium /*, firefox, webkit */]) {
+  for (const browserType of [chromium /*, firefox */, webkit]) {
     await benchBrowser(browserType);
   }
 }
