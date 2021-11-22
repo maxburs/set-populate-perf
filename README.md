@@ -7,6 +7,7 @@ Model Identifier | MacBookPro18,4
 Chip | Apple M1 Max
 Total Number of Cores | 10 (8 performance and 2 efficiency)
 Memory | 32 GB
+deno | 1.16.2
 
 name | duration | normal
 -|-|-
