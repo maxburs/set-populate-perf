@@ -89,7 +89,7 @@ function bench({ TIMES, COUNT }: { TIMES: number; COUNT: number }) {
 }
 
 async function benchBrowser(browserType: BrowserType) {
-  const browser = await chromium.launch();
+  const browser = await browserType.launch();
 
   const page = await browser.newPage();
 
@@ -97,19 +97,20 @@ async function benchBrowser(browserType: BrowserType) {
 
   await page.addScriptTag({ content: bench.toString() });
 
-  const result = await page.evaluate(bench, { TIMES, COUNT });
+  const result = await page.evaluate(bench, { TIMES, COUNT }) as any;
 
+  console.log(await page.evaluate(() => navigator.userAgent));
   print(browserType.name(), result);
 
-  browser.close();
+  await browser.close();
 }
 
 async function main() {
   console.log({ TIMES, COUNT });
   fs.writeFileSync(FILE, "browser, name, duration, normal\n");
 
-  for (const browser of [chromium, firefox, webkit]) {
-    benchBrowser(browser);
+  for (const browserType of [chromium /*, firefox, webkit */]) {
+    await benchBrowser(browserType);
   }
 }
 
