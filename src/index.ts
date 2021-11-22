@@ -6,24 +6,24 @@ const FILE = "./data.csv";
 const TIMES = 10_000;
 const COUNT = 10_000;
 
-function print(browser: string, result: PerformanceEntryList) {
-  const min = Math.min(...result.map((e) => e.duration));
+function print(browser: string, result: Record<string, number>) {
+  const min = Math.min(...Object.values(result));
 
   const table: Record<string, unknown> = {};
 
   const csv: unknown[] = [];
 
-  for (const d of result) {
-    const normal = (d.duration / min).toLocaleString(undefined, {
+  for (let [name, duration] of Object.entries(result)) {
+    const normal = (duration / min).toLocaleString(undefined, {
       minimumSignificantDigits: 3,
       maximumSignificantDigits: 3,
     });
 
-    const duration = Math.round(d.duration);
+    duration = Math.round(duration);
 
-    table[d.name] = { duration, normal };
+    table[name] = { duration, normal };
 
-    csv.push(browser, ", ", d.name, ", ", duration, ", ", normal, "\n");
+    csv.push(browser, ", ", name, ", ", duration, ", ", normal, "\n");
   }
 
   fs.appendFileSync(FILE, csv.join(""), {});
@@ -33,12 +33,14 @@ function print(browser: string, result: PerformanceEntryList) {
 }
 
 function bench({ TIMES, COUNT }: { TIMES: number; COUNT: number }) {
+  const measurements: Record<string, number> = {};
+
   function benchOne(name: string, callback: () => void) {
-    const start = window.performance.now();
+    const start = window.performance.now()
     for (let i = 0; i < TIMES; i++) {
       callback();
     }
-    window.performance.measure(name, { start });
+    measurements[name] = window.performance.now() - start;
   }
 
   const arr = new Array(COUNT);
@@ -85,7 +87,7 @@ function bench({ TIMES, COUNT }: { TIMES: number; COUNT: number }) {
     new Set({ [Symbol.iterator]: iterator });
   });
 
-  return window.performance.getEntries().map((e) => e.toJSON());
+  return measurements;
 }
 
 async function benchBrowser(browserType: BrowserType) {
@@ -97,7 +99,7 @@ async function benchBrowser(browserType: BrowserType) {
 
   await page.addScriptTag({ content: bench.toString() });
 
-  const result = await page.evaluate(bench, { TIMES, COUNT }) as any;
+  const result = await page.evaluate(bench, { TIMES, COUNT });
 
   console.log(await page.evaluate(() => navigator.userAgent));
   print(browserType.name(), result);
@@ -109,9 +111,9 @@ async function main() {
   console.log({ TIMES, COUNT });
   fs.writeFileSync(FILE, "browser, name, duration, normal\n");
 
-  for (const browserType of [chromium /*, firefox */, webkit]) {
-    await benchBrowser(browserType);
-  }
+  await benchBrowser(chromium);
+  await benchBrowser(firefox);
+  await benchBrowser(webkit);
 }
 
 main();
