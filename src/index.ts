@@ -6,37 +6,40 @@ const FILE = "./data.csv";
 const TIMES = 10_000;
 const COUNT = 10_000;
 
-function print(browser: string, result: Record<string, number>) {
-  const min = Math.min(...Object.values(result));
+function print(results: (readonly [string, Record<string, number>])[]) {
+  const min = Math.min(
+    ...results.flatMap(([, result]) => Object.values(result))
+  );
 
   const table: Record<string, unknown> = {};
 
-  const csv: unknown[] = [];
+  const csv: unknown[] = ["browser, name, duration, normal\n"];
 
-  for (let [name, duration] of Object.entries(result)) {
-    const normal = (duration / min).toLocaleString(undefined, {
-      minimumSignificantDigits: 3,
-      maximumSignificantDigits: 3,
-    });
+  for (const [browser, result] of results) {
+    for (let [name, duration] of Object.entries(result)) {
+      const normal = (duration / min).toLocaleString(undefined, {
+        minimumSignificantDigits: 3,
+        maximumSignificantDigits: 3,
+      });
+      duration = Math.round(duration);
 
-    duration = Math.round(duration);
+      table[name] = { duration, normal };
 
-    table[name] = { duration, normal };
+      csv.push(browser, ", ", name, ", ", duration, ", ", normal, "\n");
+    }
 
-    csv.push(browser, ", ", name, ", ", duration, ", ", normal, "\n");
+    console.log(`\n### ${browser} ###`);
+    console.table(table);
   }
 
-  fs.appendFileSync(FILE, csv.join(""), {});
-
-  console.log(`\n### ${browser} ###`);
-  console.table(table);
+  fs.writeFileSync(FILE, csv.join(""), {});
 }
 
 function bench({ TIMES, COUNT }: { TIMES: number; COUNT: number }) {
   const measurements: Record<string, number> = {};
 
   function benchOne(name: string, callback: () => void) {
-    const start = window.performance.now()
+    const start = window.performance.now();
     for (let i = 0; i < TIMES; i++) {
       callback();
     }
@@ -102,18 +105,22 @@ async function benchBrowser(browserType: BrowserType) {
   const result = await page.evaluate(bench, { TIMES, COUNT });
 
   console.log(await page.evaluate(() => navigator.userAgent));
-  print(browserType.name(), result);
 
   await browser.close();
+
+  return [browserType.name(), result] as const;
 }
 
 async function main() {
   console.log({ TIMES, COUNT });
-  fs.writeFileSync(FILE, "browser, name, duration, normal\n");
 
-  await benchBrowser(chromium);
-  await benchBrowser(firefox);
-  await benchBrowser(webkit);
+  const results = [
+    await benchBrowser(chromium),
+    await benchBrowser(firefox),
+    await benchBrowser(webkit),
+  ];
+
+  print(results);
 }
 
 main();
