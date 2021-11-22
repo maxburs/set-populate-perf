@@ -9,8 +9,8 @@ Total Number of Cores | 10 (8 performance and 2 efficiency)
 Memory | 32 GB
 deno | 1.16.2
 
-name | duration | normal
--|-|-
+browser, name | duration | normal
+-|-|-|-
 browser | name | duration | normal
 webkit | map | 4214.700000017881 | 1.162162907413227
 webkit | generator | 7012.4000000059605 | 1.9336017206246858
