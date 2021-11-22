@@ -14,14 +14,16 @@ function print(browser: string, result: PerformanceEntryList) {
   const csv: unknown[] = [];
 
   for (const d of result) {
-    const normal = d.duration / min;
+    const normal = (d.duration / min).toLocaleString(undefined, {
+      minimumSignificantDigits: 3,
+      maximumSignificantDigits: 3,
+    });
 
-    table[d.name] = {
-      duration: d.duration,
-      normal,
-    };
+    const duration = Math.round(d.duration);
 
-    csv.push(browser, ", ", d.name, ", ", d.duration, ", ", normal, "\n");
+    table[d.name] = { duration, normal };
+
+    csv.push(browser, ", ", d.name, ", ", duration, ", ", normal, "\n");
   }
 
   fs.appendFileSync(FILE, csv.join(""), {});
@@ -30,7 +32,7 @@ function print(browser: string, result: PerformanceEntryList) {
   console.table(table);
 }
 
-function bench({  TIMES, COUNT }: {TIMES: number, COUNT: number}) {
+function bench({ TIMES, COUNT }: { TIMES: number; COUNT: number }) {
   function benchOne(name: string, callback: () => void) {
     const start = window.performance.now();
     for (let i = 0; i < TIMES; i++) {
@@ -95,7 +97,7 @@ async function benchBrowser(browserType: BrowserType) {
 
   await page.addScriptTag({ content: bench.toString() });
 
-  const result = await page.evaluate(bench,{ TIMES, COUNT});
+  const result = await page.evaluate(bench, { TIMES, COUNT });
 
   print(browserType.name(), result);
 
