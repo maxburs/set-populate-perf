@@ -4,7 +4,7 @@ import { chromium, BrowserType, webkit, firefox } from "playwright";
 
 const FILE = "./data.csv";
 const TIMES = 10_000;
-const COUNT = 10_000;
+const COUNT = 1_000;
 
 function print(results: (readonly [string, Record<string, number>])[]) {
   const min = Math.min(
@@ -56,11 +56,21 @@ function bench({ TIMES, COUNT }: { TIMES: number; COUNT: number }) {
     new Set(arr.map((o) => o.val));
   });
 
-  benchOne("generator", () => {
+  benchOne("generator for", () => {
     new Set(
       (function* () {
         for (const item of arr) {
           yield item.val;
+        }
+      })()
+    );
+  });
+
+  benchOne("generator for..of", () => {
+    new Set(
+      (function* () {
+        for (let i = 0; i < arr.length; i++) {
+          yield arr[i].val;
         }
       })()
     );
