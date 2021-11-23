@@ -1,9 +1,10 @@
 import fs from "fs";
 
 import { chromium, BrowserType, webkit, firefox } from "playwright";
+import { bench } from "./bench.js";
 
 const FILE = "./data.csv";
-const TIMES = 10_000;
+const CYCLES = 10_000;
 const COUNT = 1_000;
 
 function print(results: (readonly [string, Record<string, number>])[]) {
@@ -35,74 +36,6 @@ function print(results: (readonly [string, Record<string, number>])[]) {
   fs.writeFileSync(FILE, csv.join(""), {});
 }
 
-function bench({ TIMES, COUNT }: { TIMES: number; COUNT: number }) {
-  const measurements: Record<string, number> = {};
-
-  function benchOne(name: string, callback: () => void) {
-    const start = window.performance.now();
-    for (let i = 0; i < TIMES; i++) {
-      callback();
-    }
-    measurements[name] = window.performance.now() - start;
-  }
-
-  const arr = new Array(COUNT);
-
-  for (let i = 0; i <= COUNT; i++) {
-    arr[i] = { val: i };
-  }
-
-  benchOne("map", () => {
-    new Set(arr.map((o) => o.val));
-  });
-
-  benchOne("generator for", () => {
-    new Set(
-      (function* () {
-        for (const item of arr) {
-          yield item.val;
-        }
-      })()
-    );
-  });
-
-  benchOne("generator for..of", () => {
-    new Set(
-      (function* () {
-        for (let i = 0; i < arr.length; i++) {
-          yield arr[i].val;
-        }
-      })()
-    );
-  });
-
-  benchOne("Set#add", () => {
-    const set = new Set();
-
-    for (const item of arr) {
-      set.add(item.val);
-    }
-  });
-
-  benchOne("iterator", () => {
-    const iterator = () => ({
-      i: 0,
-      next() {
-        const value = {
-          value: arr[this.i],
-          done: this.i === arr.length - 1,
-        };
-        this.i++;
-        return value;
-      },
-    });
-
-    new Set({ [Symbol.iterator]: iterator });
-  });
-
-  return measurements;
-}
-
 async function benchBrowser(browserType: BrowserType) {
   const browser = await browserType.launch();
 
@@ -112,7 +45,7 @@ async function benchBrowser(browserType: BrowserType) {
 
   await page.addScriptTag({ content: bench.toString() });
 
-  const result = await page.evaluate(bench, { TIMES, COUNT });
+  const result = await page.evaluate(bench, { CYCLES: CYCLES, COUNT });
 
   console.log(await page.evaluate(() => navigator.userAgent));
 
@@ -122,7 +55,7 @@ async function benchBrowser(browserType: BrowserType) {
 }
 
 async function main() {
-  console.log({ TIMES, COUNT });
+  console.log({ CYCLES: CYCLES, COUNT });
 
   const results = [
     await benchBrowser(chromium),
