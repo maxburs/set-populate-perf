@@ -39,11 +39,19 @@ export function bench({ CYCLES, COUNT }: { CYCLES: number; COUNT: number }) {
     );
   });
 
-  benchOne("Set#add", () => {
+  benchOne("Set#add for..of", () => {
     const set = new Set();
 
     for (const item of arr) {
       set.add(item.val);
+    }
+  });
+
+  benchOne("Set#add for", () => {
+    const set = new Set();
+
+    for (let i = 0; i < arr.length; i++) {
+      set.add(arr[i].val);
     }
   });
 

@@ -1,16 +1,19 @@
 browser, name, duration, normal
-chromium, map, 268, 1.51
-chromium, generator for..of, 636, 3.59
-chromium, generator for, 468, 2.64
-chromium, Set#add, 193, 1.09
-chromium, iterator, 355, 2.01
-firefox, map, 303, 1.71
-firefox, generator for..of, 1118, 6.32
-firefox, generator for, 1139, 6.44
-firefox, Set#add, 441, 2.49
-firefox, iterator, 605, 3.42
-webkit, map, 253, 1.43
-webkit, generator for..of, 1209, 6.83
-webkit, generator for, 933, 5.27
-webkit, Set#add, 177, 1.00
-webkit, iterator, 705, 3.98
+chromium, map, 278, 1.55
+chromium, generator for..of, 633, 3.54
+chromium, generator for, 479, 2.67
+chromium, Set#add for..of, 213, 1.19
+chromium, Set#add for, 202, 1.13
+chromium, iterator, 358, 2.00
+firefox, map, 271, 1.51
+firefox, generator for..of, 1106, 6.18
+firefox, generator for, 1131, 6.32
+firefox, Set#add for..of, 438, 2.45
+firefox, Set#add for, 405, 2.26
+firefox, iterator, 609, 3.40
+webkit, map, 246, 1.37
+webkit, generator for..of, 1197, 6.69
+webkit, generator for, 914, 5.11
+webkit, Set#add for..of, 185, 1.03
+webkit, Set#add for, 179, 1.00
+webkit, iterator, 708, 3.96
